@@ -20,10 +20,14 @@ import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 
 export default function EditTaskDialog({ handleClose, open, data, setData }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedPriority, setSelectedPriority] = useState("");
 
   const handleDateChange = (date) => {
-    console.log(date);
     setSelectedDate(date);
+  };
+
+  const handlePriorityChange = (event) => {
+    setSelectedPriority(event.target.value);
   };
 
   const handleAddTask = () => {
@@ -34,10 +38,26 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
       day: "2-digit",
       year: "numeric",
     });
-    const priorityRadio = document.querySelector(
-      'input[name="priority"]:checked'
-    );
-    const priority = priorityRadio ? priorityRadio.value : "";
+
+    if (!title || title == "") {
+      return;
+    }
+
+    if (titleExists(title)) {
+      return;
+    }
+
+    if (!description || description == "") {
+      return;
+    }
+
+    if (!deadline || deadline == "") {
+      return;
+    }
+
+    if (!selectedPriority || selectedPriority == "") {
+      return;
+    }
 
     const newData = [
       ...data,
@@ -45,7 +65,7 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
         title: title,
         description: description,
         deadline: deadline,
-        priority: priority,
+        priority: selectedPriority,
       },
     ];
 
@@ -54,6 +74,14 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
     handleClose();
   };
 
+  const titleExists = (title) => {
+    let exists = false;
+    data.array.forEach((element) => {
+      if (element.find((r) => r.title === title)) exists = true;
+    });
+
+    return exists;
+  };
   return (
     <Dialog onClose={() => handleClose()} open={open}>
       <DialogTitle>
@@ -73,7 +101,12 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
             />
           </LocalizationProvider>
           <FormLabel id="radioLabel">Priority</FormLabel>
-          <RadioGroup row aria-labelledby="radioLabel">
+          <RadioGroup
+            row
+            aria-labelledby="radioLabel"
+            value={selectedPriority}
+            onChange={handlePriorityChange}
+          >
             <FormControlLabel value="low" control={<Radio />} label="Low" />
             <FormControlLabel
               value="medium"

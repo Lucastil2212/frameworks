@@ -41,7 +41,7 @@ export default function BannerBar() {
           </Button>
         </Toolbar>
       </AppBar>
-      <Table data={data} />
+      <Table setData={setData} data={data} />
       <Dialog
         handleClose={handleClose}
         open={open}
