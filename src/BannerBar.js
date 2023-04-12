@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Toolbar,
   AppBar,
@@ -10,8 +10,17 @@ import {
 
 import MenuIcon from "@mui/icons-material/Menu";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import Dialog from "./EditTaskDialog";
+import Table from "./FrameworksTable";
 
 export default function BannerBar() {
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState([]);
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -22,12 +31,23 @@ export default function BannerBar() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             FRAMEWORKS
           </Typography>
-          <Button sx={{ marginLeft: "160%" }} color="inherit">
+          <Button
+            sx={{ marginLeft: "160%" }}
+            color="inherit"
+            onClick={() => setOpen(true)}
+          >
             <AddCircleIcon />
             ADD
           </Button>
         </Toolbar>
       </AppBar>
+      <Table data={data} />
+      <Dialog
+        handleClose={handleClose}
+        open={open}
+        data={data}
+        setData={setData}
+      />
     </Box>
   );
 }

@@ -1,6 +1,6 @@
 import "./App.css";
 import BannerBar from "./BannerBar";
-import Table from "./Table";
+import Table from "./FrameworksTable";
 
 import { Container } from "@mui/material";
 
@@ -9,7 +9,6 @@ function App() {
     <div className="App">
       <Container>
         <BannerBar />
-        <Table />
       </Container>
     </div>
   );
