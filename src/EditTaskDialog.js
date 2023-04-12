@@ -20,14 +20,26 @@ import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 
 export default function EditTaskDialog({ handleClose, open, data, setData }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedPriority, setSelectedPriority] = useState("");
+  const [selectedPriority, setSelectedPriority] = useState("low");
+
+  const [titleError, setTitleError] = useState(false);
+  const [titleExistsError, setTitleExistsError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+  const [deadlineError, setDeadlineError] = useState(false);
 
   const handleDateChange = (date) => {
+    deadlineError(false);
     setSelectedDate(date);
   };
 
   const handlePriorityChange = (event) => {
-    setSelectedPriority(event.target.value);
+    if (selectedPriority === event.target.value) {
+      // if the same priority is clicked, uncheck the radio button
+      setSelectedPriority("");
+    } else {
+      // otherwise, set the selected priority to the clicked value
+      setSelectedPriority(event.target.value);
+    }
   };
 
   const handleAddTask = () => {
@@ -39,23 +51,23 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
       year: "numeric",
     });
 
-    if (!title || title == "") {
+    if (!title || title === "") {
+      setTitleError(true);
       return;
     }
 
     if (titleExists(title)) {
+      setTitleExistsError(true);
       return;
     }
 
-    if (!description || description == "") {
+    if (!description || description === "") {
+      setDescriptionError(true);
       return;
     }
 
-    if (!deadline || deadline == "") {
-      return;
-    }
-
-    if (!selectedPriority || selectedPriority == "") {
+    if (!deadline || deadline === "") {
+      setDeadlineError(true);
       return;
     }
 
@@ -66,6 +78,7 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
         description: description,
         deadline: deadline,
         priority: selectedPriority,
+        isComplete: false,
       },
     ];
 
@@ -76,8 +89,8 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
 
   const titleExists = (title) => {
     let exists = false;
-    data.array.forEach((element) => {
-      if (element.find((r) => r.title === title)) exists = true;
+    data.forEach((element) => {
+      if (element.title === title) exists = true;
     });
 
     return exists;
@@ -90,14 +103,32 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
       </DialogTitle>
       <Container>
         <FormControl>
-          <TextField id="title" placeholder="Title"></TextField>
-          <TextField id="description" placeholder="Description"></TextField>
+          <TextField
+            id="title"
+            placeholder="Title"
+            error={titleError}
+            helperText={
+              titleError
+                ? "Title is required!"
+                : titleExistsError
+                ? "Title already exists"
+                : ""
+            }
+          ></TextField>
+          <TextField
+            id="description"
+            placeholder="Description"
+            error={descriptionError}
+            helperText={descriptionError ? "Description is required" : ""}
+          ></TextField>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               id="deadline"
               label="Deadline"
               value={selectedDate}
               onChange={handleDateChange}
+              error={deadlineError}
+              helperText={deadlineError ? "Deadline is required" : ""}
             />
           </LocalizationProvider>
           <FormLabel id="radioLabel">Priority</FormLabel>
@@ -107,7 +138,12 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
             value={selectedPriority}
             onChange={handlePriorityChange}
           >
-            <FormControlLabel value="low" control={<Radio />} label="Low" />
+            <FormControlLabel
+              value="low"
+              control={<Radio />}
+              label="Low"
+              checked={selectedPriority === "low"} // set checked prop to true if "Low" is selectedchecked="true"
+            />
             <FormControlLabel
               value="medium"
               control={<Radio />}
