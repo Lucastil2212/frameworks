@@ -12,6 +12,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import Dialog from "./EditTaskDialog";
 import Table from "./FrameworksTable";
+import Toaster from "./Toaster";
 
 export default function BannerBar() {
   const handleClose = () => {
@@ -22,6 +23,13 @@ export default function BannerBar() {
   const [data, setData] = useState([]);
 
   const [formData, setFormData] = useState({});
+
+  const [openToaster, setOpenToaster] = useState(false);
+  const [toasterMessage, setToasterMessage] = useState("");
+
+  const handleCloseToaster = () => {
+    setOpenToaster(false);
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -51,6 +59,8 @@ export default function BannerBar() {
         data={data}
         setFormData={setFormData}
         setOpen={setOpen}
+        setOpenToaster={setOpenToaster}
+        setToasterMessage={setToasterMessage}
       />
       <Dialog
         handleClose={handleClose}
@@ -59,6 +69,13 @@ export default function BannerBar() {
         setData={setData}
         formData={formData}
         setFormData={setFormData}
+        setOpenToaster={setOpenToaster}
+        setToasterMessage={setToasterMessage}
+      />
+      <Toaster
+        message={toasterMessage}
+        open={openToaster}
+        handleClose={handleCloseToaster}
       />
     </Box>
   );

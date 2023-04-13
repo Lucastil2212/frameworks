@@ -19,6 +19,8 @@ export default function FrameworksTable({
   data,
   setFormData,
   setOpen,
+  setOpenToaster,
+  setToasterMessage,
 }) {
   const removeData = (title) => {
     const newData = [...data];
@@ -32,6 +34,9 @@ export default function FrameworksTable({
     newData.splice(i, 1);
 
     setData(newData);
+
+    setOpenToaster(true);
+    setToasterMessage("Succesfully deleted row!");
   };
 
   const updateData = (data) => {

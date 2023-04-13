@@ -26,6 +26,8 @@ export default function EditTaskDialog({
   setData,
   formData,
   setFormData,
+  setOpenToaster,
+  setToasterMessage,
 }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -115,7 +117,8 @@ export default function EditTaskDialog({
           isComplete: false,
         },
       ];
-
+      setOpenToaster(true);
+      setToasterMessage("Succesfully added row!");
       setData(newData);
     } else {
       const newData = [...data];
@@ -135,7 +138,9 @@ export default function EditTaskDialog({
         isComplete: false,
       };
 
-      console.log(newData);
+      setOpenToaster(true);
+      setToasterMessage("Succesfully updated row!");
+
       setData(newData);
       setAdd(true);
     }
