@@ -17,6 +17,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
+import EditNoteIcon from "@mui/icons-material/EditNote";
 
 export default function EditTaskDialog({
   handleClose,
@@ -50,9 +51,7 @@ export default function EditTaskDialog({
   };
   const handleDateChange = (date) => {
     setDeadlineError(false);
-
     setSelectedDate(date);
-    setFormData({});
   };
 
   useEffect(() => {
@@ -169,7 +168,7 @@ export default function EditTaskDialog({
         <BorderColorIcon />
         Edit Task
       </DialogTitle>
-      <Container>
+      <Container style={{ margin: "2%" }}>
         <FormControl>
           <TextField
             id="title"
@@ -184,6 +183,8 @@ export default function EditTaskDialog({
                 ? "Title already exists"
                 : ""
             }
+            disabled={!add}
+            style={{ margin: "2%" }}
           ></TextField>
           <TextField
             id="description"
@@ -192,6 +193,7 @@ export default function EditTaskDialog({
             onChange={handleDescriptionChange}
             error={descriptionError}
             helperText={descriptionError ? "Description is required" : ""}
+            style={{ margin: "2% 2% 6% 2%" }}
           ></TextField>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
@@ -203,7 +205,9 @@ export default function EditTaskDialog({
               helperText={deadlineError ? "Deadline is required" : ""}
             />
           </LocalizationProvider>
-          <FormLabel id="radioLabel">Priority</FormLabel>
+          <FormLabel id="radioLabel" style={{ margin: "2%" }}>
+            Priority
+          </FormLabel>
           <RadioGroup
             row
             aria-labelledby="radioLabel"
@@ -223,16 +227,28 @@ export default function EditTaskDialog({
             />
             <FormControlLabel value="high" control={<Radio />} label="High" />
           </RadioGroup>
-          <div>
-            <Button color="primary" variant="contained" onClick={handleAddTask}>
-              <AddCircleIcon />
-              &nbsp; Add
+          <Container
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              margin: "5% 5% 5%",
+            }}
+          >
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={handleAddTask}
+              sx={{ marginRight: "2% 10% 5%" }}
+            >
+              {add ? <AddCircleIcon /> : <EditNoteIcon />}
+              &nbsp;
+              {add ? "Add" : "Update"}
             </Button>
             <Button color="error" variant="contained" onClick={handleOnClose}>
               <DoDisturbIcon />
               &nbsp; Cancel
             </Button>
-          </div>
+          </Container>
         </FormControl>
       </Container>
     </Dialog>

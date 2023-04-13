@@ -9,6 +9,7 @@ import {
   Paper,
   Checkbox,
   Button,
+  Container,
 } from "@mui/material";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -70,7 +71,7 @@ export default function FrameworksTable({
             <TableCell align="right">Is Complete</TableCell>
             <TableCell align="right">Action</TableCell>
           </TableRow>
-        </TableHead>{" "}
+        </TableHead>
         <TableBody>
           {data.map((row) => (
             <TableRow
@@ -87,13 +88,19 @@ export default function FrameworksTable({
                 ></Checkbox>
               </TableCell>
               <TableCell align="right">
-                <div style={{ display: "block" }}>
+                <Container
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
                   {row.isComplete ? null : (
                     <Button
                       id="update"
                       color="primary"
                       variant="contained"
                       onClick={() => updateData(row)}
+                      sx={{ margin: "2% 20%" }}
                     >
                       <EditNoteIcon />
                       &nbsp; UPDATE
@@ -104,11 +111,12 @@ export default function FrameworksTable({
                     color="error"
                     variant="contained"
                     onClick={() => removeData(row.title)}
+                    sx={{ margin: "0% 20%" }}
                   >
                     <CancelIcon />
                     &nbsp; DELETE
                   </Button>
-                </div>
+                </Container>
               </TableCell>
             </TableRow>
           ))}
