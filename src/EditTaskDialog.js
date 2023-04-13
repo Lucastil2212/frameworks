@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -18,7 +18,17 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 
-export default function EditTaskDialog({ handleClose, open, data, setData }) {
+export default function EditTaskDialog({
+  handleClose,
+  open,
+  data,
+  setData,
+  formData,
+  setFormData,
+}) {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedPriority, setSelectedPriority] = useState("low");
 
@@ -27,10 +37,38 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
   const [descriptionError, setDescriptionError] = useState(false);
   const [deadlineError, setDeadlineError] = useState(false);
 
-  const handleDateChange = (date) => {
-    deadlineError(false);
-    setSelectedDate(date);
+  const [add, setAdd] = useState(true);
+
+  const handleTitleChange = (event) => {
+    setTitleError(false);
+    setTitleExistsError(false);
+    setTitle(event.target.value);
   };
+  const handleDescriptionChange = (event) => {
+    setDescriptionError(false);
+    setDescription(event.target.value);
+  };
+  const handleDateChange = (date) => {
+    setDeadlineError(false);
+
+    setSelectedDate(date);
+    setFormData({});
+  };
+
+  useEffect(() => {
+    if (Object.keys(formData).length === 0) {
+      setAdd(true);
+    } else {
+      setTitle(formData.title);
+      setDescription(formData.description);
+      const dateString = formData.deadline;
+      const parts = dateString.split("/");
+      const dateObject = new Date(parts[2], parts[1] - 1, parts[0]);
+      setSelectedDate(dateObject);
+      setSelectedPriority(formData.priority);
+      setAdd(false);
+    }
+  }, [formData]);
 
   const handlePriorityChange = (event) => {
     if (selectedPriority === event.target.value) {
@@ -43,8 +81,6 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
   };
 
   const handleAddTask = () => {
-    const title = document.getElementById("title").value;
-    const description = document.getElementById("description").value;
     const deadline = selectedDate.toLocaleDateString("en-US", {
       month: "2-digit",
       day: "2-digit",
@@ -53,11 +89,6 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
 
     if (!title || title === "") {
       setTitleError(true);
-      return;
-    }
-
-    if (titleExists(title)) {
-      setTitleExistsError(true);
       return;
     }
 
@@ -70,21 +101,47 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
       setDeadlineError(true);
       return;
     }
+    if (add) {
+      if (titleExists(title)) {
+        setTitleExistsError(true);
+        return;
+      }
+      const newData = [
+        ...data,
+        {
+          title: title,
+          description: description,
+          deadline: deadline,
+          priority: selectedPriority,
+          isComplete: false,
+        },
+      ];
 
-    const newData = [
-      ...data,
-      {
+      setData(newData);
+    } else {
+      const newData = [...data];
+
+      const i = newData.map((row, index) => {
+        if (newData.find((r) => r.title === title)) {
+          return index;
+        }
+      });
+
+      console.log(i);
+      newData[i] = {
         title: title,
         description: description,
         deadline: deadline,
         priority: selectedPriority,
         isComplete: false,
-      },
-    ];
+      };
 
-    setData(newData);
+      console.log(newData);
+      setData(newData);
+      setAdd(true);
+    }
 
-    handleClose();
+    handleOnClose();
   };
 
   const titleExists = (title) => {
@@ -95,8 +152,19 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
 
     return exists;
   };
+  const handleOnClose = () => {
+    handleClose();
+    setTitleError(false);
+    setTitleExistsError(false);
+    setDescriptionError(false);
+    setDeadlineError(false);
+    setTitle("");
+    setDescription("");
+    setSelectedDate(new Date());
+    setSelectedPriority("low");
+  };
   return (
-    <Dialog onClose={() => handleClose()} open={open}>
+    <Dialog onClose={handleOnClose} open={open}>
       <DialogTitle>
         <BorderColorIcon />
         Edit Task
@@ -106,7 +174,9 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
           <TextField
             id="title"
             placeholder="Title"
-            error={titleError}
+            value={title}
+            onChange={handleTitleChange}
+            error={titleError || titleExistsError}
             helperText={
               titleError
                 ? "Title is required!"
@@ -118,6 +188,8 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
           <TextField
             id="description"
             placeholder="Description"
+            value={description}
+            onChange={handleDescriptionChange}
             error={descriptionError}
             helperText={descriptionError ? "Description is required" : ""}
           ></TextField>
@@ -156,7 +228,7 @@ export default function EditTaskDialog({ handleClose, open, data, setData }) {
               <AddCircleIcon />
               &nbsp; Add
             </Button>
-            <Button color="error" variant="contained" onClick={handleClose}>
+            <Button color="error" variant="contained" onClick={handleOnClose}>
               <DoDisturbIcon />
               &nbsp; Cancel
             </Button>

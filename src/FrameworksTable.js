@@ -13,7 +13,12 @@ import {
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import CancelIcon from "@mui/icons-material/Cancel";
 
-export default function FrameworksTable({ setData, data }) {
+export default function FrameworksTable({
+  setData,
+  data,
+  setFormData,
+  setOpen,
+}) {
   const removeData = (title) => {
     const newData = [...data];
 
@@ -29,7 +34,13 @@ export default function FrameworksTable({ setData, data }) {
   };
 
   const updateData = (data) => {
-    return;
+    setOpen(true);
+    setFormData({
+      title: data.title,
+      description: data.description,
+      deadline: data.deadline,
+      priority: data.priority,
+    });
   };
 
   const checkedBox = (title, checked) => {

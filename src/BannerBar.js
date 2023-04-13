@@ -21,6 +21,8 @@ export default function BannerBar() {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
 
+  const [formData, setFormData] = useState({});
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -34,19 +36,29 @@ export default function BannerBar() {
           <Button
             sx={{ marginLeft: "160%" }}
             color="inherit"
-            onClick={() => setOpen(true)}
+            onClick={() => {
+              setFormData({});
+              setOpen(true);
+            }}
           >
             <AddCircleIcon />
             ADD
           </Button>
         </Toolbar>
       </AppBar>
-      <Table setData={setData} data={data} />
+      <Table
+        setData={setData}
+        data={data}
+        setFormData={setFormData}
+        setOpen={setOpen}
+      />
       <Dialog
         handleClose={handleClose}
         open={open}
         data={data}
         setData={setData}
+        formData={formData}
+        setFormData={setFormData}
       />
     </Box>
   );
